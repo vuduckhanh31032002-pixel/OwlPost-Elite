@@ -1,6 +1,6 @@
 # 🦉 OwlPost Elite — Chat App
 
-Ứng dụng nhắn tin trực tuyến (realtime) dành cho môn **Điện toán di động**.
+Ứng dụng nhắn tin trực tuyến (realtime) được xây dựng trong khuôn khổ **đồ án Web**.
 
 - **Backend:** Spring Boot 3.5.10 · Java 17 · Spring Data JPA · Spring Security · Jakarta WebSocket · JWT (jjwt 0.12.6) · PostgreSQL
 - **Frontend:** React 19 · Vite 7 · Axios
@@ -15,12 +15,13 @@ Project dùng **PostgreSQL**. Làm theo 6 bước dưới đây.
 
 ### Bước 1 — Cài PostgreSQL
 
-Cài **PostgreSQL 16** (khuyến nghị) từ <https://www.postgresql.org/download/windows/>.
+Cài **PostgreSQL 16** (khuyến nghị) từ https://www.postgresql.org/download/windows/.
+
 Sau khi cài, mở **psql** hoặc **pgAdmin**.
 
 ### Bước 2 — Tạo database `chatapp`
 
-PostgreSQL **không cho phép** chạy `CREATE DATABASE` bên trong transaction, nên cần chạy lệnh này **riêng**, không chạy cả file:
+PostgreSQL không cho phép chạy `CREATE DATABASE` bên trong transaction, nên cần chạy lệnh này riêng, không chạy cả file:
 
 ```sql
 CREATE DATABASE chatapp;
@@ -50,7 +51,7 @@ File này tạo **8 bảng**: `users`, `chatrooms`, `roommembers`, `messages`, `
 psql -U postgres -d chatapp -f database-init.sql
 ```
 
-> File dành cho database mới, chạy **một lần**. Nếu bảng đã tồn tại sẽ báo `relation already exists` — đây là bình thường.
+> File dành cho database mới, chạy một lần. Nếu bảng đã tồn tại sẽ báo `relation already exists` — đây là bình thường.
 
 ### Bước 5 — Cấu hình username / password PostgreSQL
 
@@ -68,10 +69,10 @@ Cách khuyến nghị hơn (không ghi mật khẩu vào code) — dùng **biế
 |---|---|
 | `SPRING_DATASOURCE_URL` | `jdbc:postgresql://localhost:5432/chatapp` |
 | `SPRING_DATASOURCE_USERNAME` | `postgres` |
-| `SPRING_DATASOURCE_PASSWORD` | mật khẩu PostgreSQL của bạn |
+| `SPRING_DATASOURCE_PASSWORD` | Mật khẩu PostgreSQL của bạn |
 | `SPRING_JPA_HIBERNATE_DDL_AUTO` | `update` |
 
-Ngoài ra backend còn cần đặt biến môi trường **`JWT_SECRET`** (khóa ký JWT). Không có biến này ứng dụng sẽ không khởi động được.
+Ngoài ra, backend còn cần đặt biến môi trường `JWT_SECRET` (khóa ký JWT). Không có biến này, ứng dụng sẽ không khởi động được.
 
 ### Bước 6 — Chạy Backend
 
@@ -80,11 +81,13 @@ cd backend
 mvn spring-boot:run
 ```
 
-Hibernate với `spring.jpa.hibernate.ddl-auto=update` sẽ **kiểm tra và đồng bộ schema** — nó chỉ bổ sung những gì còn thiếu, không xóa dữ liệu bạn đã có.
+Hibernate với `spring.jpa.hibernate.ddl-auto=update` sẽ kiểm tra và đồng bộ schema, chủ yếu bổ sung những gì còn thiếu; không nên xem đây là cơ chế sao lưu dữ liệu.
 
 Backend chạy tại `http://localhost:8081`.
 
 ### Chạy Frontend
+
+Mở terminal mới, chạy:
 
 ```bash
 cd frontend
@@ -94,11 +97,12 @@ npm run dev
 
 Frontend chạy tại `http://localhost:5173`.
 
-> Cấu hình địa chỉ backend trong `frontend/.env`:
-> ```
-> VITE_BACKEND_ORIGIN=http://localhost:8081
-> VITE_GOOGLE_CLIENT_ID=<client id Google OAuth nếu muốn dùng đăng nhập Google>
-> ```
+Cấu hình địa chỉ backend trong `frontend/.env`:
+
+```env
+VITE_BACKEND_ORIGIN=http://localhost:8081
+VITE_GOOGLE_CLIENT_ID=<client id Google OAuth nếu muốn dùng đăng nhập Google>
+```
 
 ---
 
@@ -107,15 +111,16 @@ Frontend chạy tại `http://localhost:5173`.
 | File | Mục đích |
 |---|---|
 | `database-init.sql` | **Script khởi tạo database** — dùng để dựng database từ đầu trên máy mới. |
-| `database-postgres.sql` | **File tài liệu** — mô tả chi tiết cấu trúc 8 bảng (dành cho giáo viên xem). Không cần chạy. |
-| `database.sql` | File cũ của SQL Server, **không dùng với project hiện tại**. |
+| `database-postgres.sql` | **File tài liệu** — mô tả chi tiết cấu trúc 8 bảng, dành cho giáo viên xem. Không cần chạy. |
+| `database.sql` | File SQL Server cũ, không dùng với project PostgreSQL hiện tại. |
 
 ### Về cơ chế đồng bộ schema
 
-Project **không** dùng Flyway/Liquibase và **không** tự chạy file SQL khi khởi động.
-Toàn bộ schema được Hibernate sinh ra từ các file Entity nhờ `ddl-auto=update`.
+Project không sử dụng Flyway/Liquibase và không tự chạy file SQL khi khởi động.
 
-Vì vậy `database-init.sql` chỉ là bước dựng sẵn database cho thuận tiện. Nếu bạn bỏ qua bước này và chạy thẳng Backend, Hibernate vẫn tự tạo đủ bảng.
+Schema được Hibernate tạo và đồng bộ từ các file Entity nhờ cấu hình `ddl-auto=update`.
+
+Vì vậy, `database-init.sql` là bước dựng sẵn database để thuận tiện. Nếu bỏ qua bước này và chạy backend, Hibernate vẫn có thể tự tạo các bảng theo cấu hình và các Entity hiện có.
 
 ---
 
@@ -130,8 +135,8 @@ mvn test
 
 ## 📁 Cấu trúc project
 
-```
-Chat-app-web-main/
+```text
+Chat-App-Web-OWLPOST ELITE/
 ├── backend/                    # Spring Boot (API REST + WebSocket)
 │   └── src/main/java/edu/khanh2002/chatapp/
 │       ├── config/             # Security, JWT, CORS, xử lý lỗi
@@ -142,16 +147,17 @@ Chat-app-web-main/
 │       └── websocket/          # ChatSocket, UserSocket
 ├── frontend/                   # React + Vite
 │   └── src/
-│       ├── pages/              # Auth, MainLayout, Profile
-│       ├── layout/             # Sidebar, ChatList, ChatWindow
-│       ├── components/         # Modal, MessageBubble...
-│       └── services/           # api.js, socket.js, userSocket.js
+│       ├── pages/              # Các trang giao diện
+│       ├── layout/             # Bố cục giao diện chat
+│       ├── components/         # Các thành phần giao diện
+│       └── services/           # API và WebSocket
 ├── database-init.sql           # Script khởi tạo database
-└── database-postgres.sql       # Tài liệu cấu trúc database
+├── database-postgres.sql       # Tài liệu cấu trúc database
+└── README.md                   # Tài liệu hướng dẫn dự án
 ```
 
 ---
 
 ## 👤 Tác giả
 
-**Vũ Đức Khánh** — Đồ án môn Điện toán di động
+**Vũ Đức Khánh** — Đồ án môn học Phát triển Web
